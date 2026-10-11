@@ -191,6 +191,41 @@ wheels = [
 ]
 
 [[package]]
+name = "galadyas-visionary"
+version = "1.0.0rc1"
+source = { editable = "." }
+dependencies = [
+    { name = "imageio-ffmpeg" },
+    { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
+    { name = "numpy", version = "2.5.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
+    { name = "pillow" },
+    { name = "pyside6" },
+]
+
+[package.optional-dependencies]
+manim = [
+    { name = "manim" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "pytest" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "imageio-ffmpeg", specifier = ">=0.5" },
+    { name = "manim", marker = "extra == 'manim'", specifier = ">=0.18" },
+    { name = "numpy", specifier = ">=1.24" },
+    { name = "pillow", specifier = ">=10" },
+    { name = "pyside6", specifier = ">=6.6" },
+]
+provides-extras = ["manim"]
+
+[package.metadata.requires-dev]
+dev = [{ name = "pytest", specifier = ">=8" }]
+
+[[package]]
 name = "glcontext"
 version = "3.1.0"
 source = { registry = "https://pypi.org/simple" }
@@ -430,38 +465,6 @@ sdist = { url = "https://files.pythonhosted.org/packages/d6/54/cfe61301667036ec9
 wheels = [
     { url = "https://files.pythonhosted.org/packages/b3/38/89ba8ad64ae25be8de66a6d463314cf1eb366222074cfda9ee839c56a4b4/mdurl-0.1.2-py3-none-any.whl", hash = "sha256:84008a41e51615a49fc9966191ff91509e3c40b939176e643fd50a5c2196b8f8", size = 9979, upload-time = "2022-08-14T12:40:09.779Z" },
 ]
-
-[[package]]
-name = "mindas-scene"
-version = "1.0.0rc1"
-source = { editable = "." }
-dependencies = [
-    { name = "imageio-ffmpeg" },
-    { name = "pillow" },
-    { name = "pyside6" },
-]
-
-[package.optional-dependencies]
-manim = [
-    { name = "manim" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "pytest" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "imageio-ffmpeg", specifier = ">=0.5" },
-    { name = "manim", marker = "extra == 'manim'", specifier = ">=0.18" },
-    { name = "pillow", specifier = ">=10" },
-    { name = "pyside6", specifier = ">=6.6" },
-]
-provides-extras = ["manim"]
-
-[package.metadata.requires-dev]
-dev = [{ name = "pytest", specifier = ">=8" }]
 
 [[package]]
 name = "moderngl"

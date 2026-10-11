@@ -14,14 +14,15 @@ from typing import Callable
 from . import effects as fx
 from .canvas import Canvas, Font
 from .motion import ease_out_cubic, ease_out_expo, keyframes, mix, ramp, stagger
-from .themes import BODY, DISPLAY, LABEL, Theme
+from .cosmos import galaxy
+from .themes import BODY, DISPLAY, LABEL, MONO, Theme
 
 
 @dataclass(frozen=True)
 class Field:
     key: str
     label: str
-    kind: str              # text | multiline | list | image
+    kind: str              # text | multiline | list | code | image
     default: str = ""
     help: str = ""
 
@@ -394,6 +395,143 @@ def draw_end(c, t, f, ctx):
         c.text((cx, by + 31 * u), cta, cf, mix(th.bg_mid, th.text, a), anchor="mm")
 
 
+def cta_pill(c, cx, y, text, ctx, a):
+    th, u = ctx.theme, unit(c)
+    cf = Font(LABEL, 26 * u)
+    w = c.textlength(text, cf) + 64 * u
+    y = y + 10 * u * (1 - a)
+    c.rect((cx - w / 2, y, cx + w / 2, y + 62 * u), outline=mix(th.bg_mid, th.accent, a), width=1.5, radius=31 * u)
+    c.text((cx, y + 31 * u), text, cf, mix(th.bg_mid, th.text, a), anchor="mm")
+
+
+def draw_cosmic(c, t, f, ctx):
+    """The Whirlpool Galaxy revealed with a slow pull-back, title set beneath it."""
+    th, u, m = ctx.theme, unit(c), margin(c)
+    portrait, wide = c.h > c.w * 1.2, c.w > c.h * 1.2
+    base = min(c.w, c.h)
+    radius = base * (0.27 if wide else 0.38)
+    gy = c.h * (0.35 if portrait else 0.37)
+    reveal = ramp(t, 0, 3.0, ease_out_cubic)
+    galaxy(c, t + 2.0, (c.w / 2, gy), radius * (1.35 - 0.35 * reveal) * (1 + 0.01 * t),
+           brightness=0.1 + 0.9 * ramp(t, 0, 1.8))
+    max_w = c.w - 2 * m
+    tf, tlines = fit(c, f["title"], DISPLAY, 92 * u, max_w, 2, 48 * u)
+    sf, slines = fit(c, f["subtitle"], DISPLAY, 34 * u, max_w * 0.85, 2, 24 * u)
+    cta = f["call_to_action"].strip()
+    h = (52 * u if f["eyebrow"].strip() else 0) + len(tlines) * tf.size * 1.15 \
+        + (24 * u + len(slines) * sf.size * 1.4 if slines else 0) + (96 * u if cta else 0)
+    y = c.h - m * (0.9 if wide else 1.4) - h
+    fx.scrim(c, y - 220 * u, c.h, th.bg_bottom, 0.9)
+    cx = c.w / 2
+    if f["eyebrow"].strip():
+        eyebrow(c, cx, y, f["eyebrow"], ctx, ramp(t, 1.0, 1.7), anchor="m")
+        y += 52 * u
+    a = ramp(t, 1.2, 2.2)
+    for i, line in enumerate(tlines):
+        track = (22 * (1 - ramp(t, 1.2, 3.0, ease_out_expo)) + 0.5) * u if len(tlines) == 1 else 0
+        c.text((cx, y + i * tf.size * 1.15), line, tf, mix(th.bg_mid, th.text, a), anchor="ma", tracking=track)
+    y += len(tlines) * tf.size * 1.15 + 24 * u
+    y = lines_in(c, slines, cx, y, sf, th.muted, t, 2.0, ctx, sf.size * 1.4)
+    if cta:
+        cta_pill(c, cx, y + 34 * u, cta, ctx, ramp(t, 2.6, 3.3, ease_out_cubic))
+
+
+def draw_steps(c, t, f, ctx):
+    """A numbered process: horizontal on wide frames, vertical on tall and square ones."""
+    th, u, m = ctx.theme, unit(c), margin(c)
+    items = [r for r in rows(f["items"], 2) if r[0]][:5]
+    max_w = c.w - 2 * m
+    hf, hlines = fit(c, f["heading"], DISPLAY, 64 * u, max_w, 2, 40 * u)
+    cx = c.w / 2
+    tf, df = Font(LABEL, 30 * u), Font(BODY, 24 * u)
+    r = 30 * u
+    wide = c.w > c.h * 1.2
+    step_h = 150 * u
+    col_w = max_w / max(1, len(items))
+    body_h = (r * 2 + 40 * u + tf.size * 1.3 + 3 * df.size * 1.45) if wide else len(items) * step_h
+    head_h = len(hlines) * hf.size * 1.2 + 80 * u
+    y = max(m * 0.8, (c.h - head_h - body_h) / 2)
+    y = lines_in(c, hlines, cx, y, hf, th.text, t, 0.1, ctx, hf.size * 1.2) + 80 * u
+    n = len(items)
+    for i, (title, detail) in enumerate(items):
+        a = stagger(t, 0.6, i, 0.35, 0.6)
+        k = ramp(t, 0.9 + i * 0.35, 1.3 + i * 0.35)
+        if wide:
+            nx, ny = m + col_w * (i + 0.5), y + r
+            if i < n - 1 and k > 0:
+                c.line((nx + r + 10 * u, ny, nx + r + 10 * u + (col_w - 2 * r - 20 * u) * k, ny), fill=th.line,
+                       width=2)
+        else:
+            nx, ny = m + r, y + r + i * step_h
+            if i < n - 1 and k > 0:
+                c.line((nx, ny + r + 8 * u, nx, ny + r + 8 * u + (step_h - 2 * r - 16 * u) * k), fill=th.line,
+                       width=2)
+        if a <= 0:
+            continue
+        c.ellipse((nx - r, ny - r, nx + r, ny + r), fill=mix(th.bg_mid, th.surface, a),
+                  outline=mix(th.bg_mid, th.accent, a), width=2)
+        c.text((nx, ny), str(i + 1), Font(LABEL, 24 * u), mix(th.bg_mid, th.accent, a), anchor="mm")
+        if wide:
+            tx, ty, w, anchor = nx, ny + r + 30 * u, col_w - 30 * u, "m"
+        else:
+            tx, ty, w, anchor = nx + r + 32 * u, ny - r + 6 * u, max_w - 2 * r - 32 * u, "l"
+        rise = 12 * u * (1 - a)
+        c.text((tx, ty + rise), title, tf, mix(th.bg_mid, th.text, a), anchor=anchor + "a")
+        for j, line in enumerate(c.wrap(detail, df, w)[:3]):
+            c.text((tx, ty + rise + tf.size * 1.4 + j * df.size * 1.45), line, df, mix(th.bg_mid, th.muted, a),
+                   anchor=anchor + "a")
+
+
+def draw_code(c, t, f, ctx):
+    """A code card that types itself out; comments are dimmed."""
+    th, u, m = ctx.theme, unit(c), margin(c)
+    max_w = c.w - 2 * m
+    hf, hlines = fit(c, f["heading"], DISPLAY, 56 * u, max_w, 2, 36 * u)
+    lines = (f["code"].expandtabs(4).splitlines() or [""])[:24]
+    caption = f["caption"].strip()
+    head_h = len(hlines) * hf.size * 1.2 + 44 * u
+    avail_h = c.h - 1.6 * m - head_h - (60 * u if caption else 0) - 100 * u
+    size = 30 * u
+    longest = max(lines, key=len) or " "
+    while size > 14 * u and (c.textlength(longest, Font(MONO, size)) > max_w - 80 * u
+                             or len(lines) * size * 1.55 > avail_h):
+        size *= 0.93
+    mf = Font(MONO, size)
+    lh = size * 1.55
+    card_h = 70 * u + len(lines) * lh + 30 * u
+    y = max(m * 0.8, (c.h - head_h - card_h - (60 * u if caption else 0)) / 2)
+    cx = c.w / 2
+    y = lines_in(c, hlines, cx, y, hf, th.text, t, 0.1, ctx, hf.size * 1.2) + 44 * u
+    a = ramp(t, 0.3, 0.9, ease_out_cubic)
+    card = c.layer()
+    box = (m, y + 16 * u * (1 - a), c.w - m, y + card_h + 16 * u * (1 - a))
+    fx.shadow(card, box, radius=16 * u, blur=40 * u, opacity=0.45 if th.dark else 0.14, offset=(0, 18 * u))
+    card.rect(box, fill=th.surface, outline=th.line, width=1.5, radius=16 * u)
+    for i, col in enumerate(((236, 106, 94), (244, 190, 80), (98, 197, 84))):
+        dx = box[0] + (28 + i * 24) * u
+        card.ellipse((dx - 6 * u, box[1] + 28 * u, dx + 6 * u, box[1] + 40 * u), fill=mix(th.surface, col, 0.85))
+    total = sum(len(ln) + 1 for ln in lines)
+    speed = max(total / max(ctx.duration * 0.55, 0.5), 25)
+    shown = int(max(0.0, t - 0.8) * speed)
+    x0, y0 = box[0] + 40 * u, box[1] + 70 * u
+    cursor = None
+    for i, ln in enumerate(lines):
+        if shown <= 0:
+            break
+        part = ln[:shown]
+        shown -= len(ln) + 1
+        comment = ln.lstrip().startswith(("#", "//", "--", ";"))
+        card.text((x0, y0 + i * lh), part, mf, th.muted if comment else th.text)
+        cursor = (x0 + card.textlength(part, mf), y0 + i * lh)
+    if cursor and int(t * 2) % 2 == 0:
+        card.rect((cursor[0] + 2 * u, cursor[1] + 2 * u, cursor[0] + 2 * u + size * 0.55, cursor[1] + size * 1.15),
+                  fill=th.accent)
+    c.composite(card, a)
+    if caption:
+        c.text((cx, box[3] + 36 * u), caption, Font(BODY, 26 * u), mix(th.bg_mid, th.muted, ramp(t, 1.0, 1.8)),
+               anchor="ma")
+
+
 LIST_HELP = "One item per line."
 PAIR_HELP = "One item per line: {} | {}"
 
@@ -437,6 +575,24 @@ TEMPLATES: dict[str, Template] = {tpl.id: tpl for tpl in [
         Field("caption", "Caption", "text", ""),
         Field("image", "Image", "image"),
     ), draw_showcase, 6.0, isolate=True),
+    Template("steps", "Steps", "A numbered process or lesson outline, revealed step by step.", (
+        Field("heading", "Heading", "text", "How it works"),
+        Field("items", "Steps", "list", "Install | One command, no account needed.\n"
+              "Create | Pick a template and add your words.\n"
+              "Share | Export a video ready for any platform.", PAIR_HELP.format("Step", "Detail")),
+    ), draw_steps, 6.5),
+    Template("code", "Code", "A code snippet that types itself out; ideal for tutorials and docs.", (
+        Field("heading", "Heading", "text", "Start in two lines"),
+        Field("code", "Code", "code", 'from galadyas_visionary import Project\n\n# load a project and export it\n'
+              'Project.load("launch.gvis").video().render("launch.mp4")'),
+        Field("caption", "Caption", "text", ""),
+    ), draw_code, 6.5),
+    Template("cosmic", "Cosmic title", "A title over the Whirlpool Galaxy, revealed with a slow pull-back.", (
+        Field("eyebrow", "Label", "text", ""),
+        Field("title", "Title", "text", "Something is taking shape"),
+        Field("subtitle", "Subtitle", "text", ""),
+        Field("call_to_action", "Call to action", "text", ""),
+    ), draw_cosmic, 6.5),
     Template("end", "End card", "Closing title, tagline and call to action.", (
         Field("logo", "Logo", "image"),
         Field("title", "Title", "text", "Your product"),

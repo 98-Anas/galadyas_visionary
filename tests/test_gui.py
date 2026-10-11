@@ -8,8 +8,8 @@ pytest.importorskip("PySide6")
 
 from PySide6.QtWidgets import QLineEdit  # noqa: E402
 
-from mindas_scene.gui.app import MainWindow, create_app  # noqa: E402
-from mindas_scene.project import Project  # noqa: E402
+from galadyas_visionary.gui.app import MainWindow, create_app  # noqa: E402
+from galadyas_visionary.project import Project  # noqa: E402
 
 
 def pump(app, ms=500):
@@ -44,7 +44,7 @@ def test_studio_edit_preview_save_reopen(app, tmp_path):
     assert win.t > 0.2
     win.stop()
 
-    win.path = tmp_path / "studio.mscene"
+    win.path = tmp_path / "studio.gvis"
     assert win.save() and not win.dirty
     reopened = Project.load(win.path)
     assert reopened.format == "portrait" and len(reopened.scenes) == 6

@@ -1,4 +1,4 @@
-"""mindas_scene: polished videos from templates or code."""
+"""galadyas_visionary: polished videos from templates or code."""
 
 from . import effects
 from .canvas import Canvas, Font, find_font

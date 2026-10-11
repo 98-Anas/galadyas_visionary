@@ -9,7 +9,7 @@ from manim import BLUE_C, DOWN, GREY_B, UP, Axes, Create, FadeIn, FadeOut, Scene
 
 class HelloScene(Scene):
     def construct(self):
-        title = Text("mindas_scene", weight="LIGHT").scale(1.2)
+        title = Text("galadyas_visionary", weight="LIGHT").scale(1.2)
         sub = Text("animations, written as code", color=GREY_B).scale(0.5).next_to(title, DOWN)
         self.play(Write(title), run_time=1.2)
         self.play(FadeIn(sub, shift=UP * 0.2))

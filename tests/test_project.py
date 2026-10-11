@@ -5,9 +5,9 @@ import imageio_ffmpeg
 import pytest
 from PIL import Image
 
-from mindas_scene import Cancelled
-from mindas_scene.project import FORMATS, Project, ProjectError, Scene, build_video, sample_project
-from mindas_scene.templates import TEMPLATES, count_up, rows
+from galadyas_visionary import Cancelled
+from galadyas_visionary.project import FORMATS, Project, ProjectError, Scene, build_video, sample_project
+from galadyas_visionary.templates import TEMPLATES, count_up, rows
 
 HOSTILE = ["", "   ", "x" * 400, "word " * 200, "|||", "\n\n\n", "Ünïcødé — “quotes” ✓", "no | number | here",
            "-5 | -3", "1e9 | 3", "12,500+ | users\n | empty label\nbad line"]
@@ -17,31 +17,31 @@ def test_round_trip(tmp_path):
     p = sample_project()
     p.accent = "#ff8800"
     path = p.save(tmp_path / "demo")
-    assert path.suffix == ".mscene"
+    assert path.suffix == ".gvis"
     q = Project.load(path)
     assert q.to_dict() == p.to_dict()
 
 
 def test_save_is_atomic_and_leaves_no_temp(tmp_path):
-    sample_project().save(tmp_path / "a.mscene")
-    assert [f.name for f in tmp_path.iterdir()] == ["a.mscene"]
+    sample_project().save(tmp_path / "a.gvis")
+    assert [f.name for f in tmp_path.iterdir()] == ["a.gvis"]
 
 
 def test_rejects_foreign_damaged_and_newer_files(tmp_path):
-    bad = tmp_path / "x.mscene"
+    bad = tmp_path / "x.gvis"
     bad.write_text("{not json", encoding="utf-8")
     with pytest.raises(ProjectError, match="damaged"):
         Project.load(bad)
     bad.write_text(json.dumps({"hello": 1}), encoding="utf-8")
-    with pytest.raises(ProjectError, match="not a mindas_scene"):
+    with pytest.raises(ProjectError, match="not a galadyas_visionary"):
         Project.load(bad)
-    bad.write_text(json.dumps({"app": "mindas_scene", "schema": 99}), encoding="utf-8")
+    bad.write_text(json.dumps({"app": "galadyas_visionary", "schema": 99}), encoding="utf-8")
     with pytest.raises(ProjectError, match="newer version"):
         Project.load(bad)
 
 
 def test_forgiving_load_cleans_bad_values():
-    p = Project.from_dict({"app": "mindas_scene", "format": "cinema", "fps": 7, "theme": "Nope", "accent": "pink",
+    p = Project.from_dict({"app": "galadyas_visionary", "format": "cinema", "fps": 7, "theme": "Nope", "accent": "pink",
                            "transition": "fast", "scenes": [
                                {"template": "title", "duration": 9999, "fields": {"title": 5, "junk": "x"}},
                                {"template": "unknown"}, "garbage", {"template": "end", "duration": float("nan")}]})
@@ -90,14 +90,14 @@ def test_media_paths_follow_the_project(tmp_path):
     logo = media / "logo.png"
     Image.new("RGB", (10, 10)).save(logo)
     p = Project(scenes=[Scene("title", {**TEMPLATES["title"].defaults(), "logo": str(logo)}, 4)])
-    p.save(tmp_path / "proj.mscene")
+    p.save(tmp_path / "proj.gvis")
     assert p.scenes[0].fields["logo"] == "assets/logo.png"
-    q = Project.load(tmp_path / "proj.mscene")
+    q = Project.load(tmp_path / "proj.gvis")
     assert q.resolve(q.scenes[0].fields["logo"]) == logo.resolve()
     other = tmp_path / "elsewhere"
     other.mkdir()
-    q.save(other / "copy.mscene")
-    moved = Project.load(other / "copy.mscene")
+    q.save(other / "copy.gvis")
+    moved = Project.load(other / "copy.gvis")
     assert moved.resolve(moved.scenes[0].fields["logo"]) == logo.resolve()
 
 

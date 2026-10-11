@@ -1,19 +1,19 @@
-"""mindas_terminal launch film: 30 s, 1080p, 2x supersampled.
+"""galadyas_terminal launch film: 30 s, 1080p, 2x supersampled.
 
-    uv run mindas-scene render examples/mindas_terminal/launch.py -o examples/mindas_terminal/mindas_terminal_launch.mp4
-    uv run mindas-scene still examples/mindas_terminal/launch.py 7 13 18 24 30 36 44
+    uv run galadyas-visionary render examples/galadyas_terminal/launch.py -o examples/galadyas_terminal/galadyas_terminal_launch.mp4
+    uv run galadyas-visionary still examples/galadyas_terminal/launch.py 7 13 18 24 30 36 44
 
-Every figure on screen comes from the mindas_terminal README. Uses the fonts
-bundled with mindas_scene, so it renders the same on every OS.
+Every figure on screen comes from the galadyas_terminal README. Uses the fonts
+bundled with galadyas_visionary, so it renders the same on every OS.
 """
 
 import math
 
 from PIL import Image
 
-from mindas_scene import (Canvas, Clip, Font, Timeline, Video, clamp, ease_out_cubic, ease_out_expo, fade, keyframes,
+from galadyas_visionary import (Canvas, Clip, Font, Timeline, Video, clamp, ease_out_cubic, ease_out_expo, fade, keyframes,
                           linear, mix, ramp, stagger)
-from mindas_scene import effects as fx
+from galadyas_visionary import effects as fx
 
 W, H = 1920, 1080
 
@@ -58,7 +58,7 @@ def words(c, cx, y, text, font, color, t, start, step=0.06, dur=0.8, rise=16, tr
 
 
 def mark(c, cx, cy, size, a):
-    """The mindas_terminal glyph: a prompt inside a rounded square."""
+    """The galadyas_terminal glyph: a prompt inside a rounded square."""
     r = size / 2
     lift = 14 * (1 - a)
     c.rect((cx - r, cy - r + lift, cx + r, cy + r + lift), outline=mix(BG_MID, ACC, a), width=2, radius=size * 0.24)
@@ -75,19 +75,31 @@ def keycap(c, x, y, label, a, font=M20):
 # ---------------------------------------------------------------- 1. opening
 
 def opening(c, t):
-    mark(c, 960, 330, 104, ramp(t, 0.2, 1.1, ease_out_cubic))
-    a = ramp(t, 0.6, 1.6)
-    track = 30 * (1 - ramp(t, 0.6, 2.4, ease_out_expo)) + 1
-    c.text((960, 470), "mindas_terminal", Font(LIGHT, 108), mix(BG_MID, FG, a), anchor="mt", tracking=track)
-    words(c, 960, 625, "One terminal workspace, wherever you work.", Font(LIGHT, 38), SOFT, t, 1.5)
+    """What it is, for whom, and what it does, in the first three seconds."""
+    mark(c, 960, 285, 96, ramp(t, 0.05, 0.7, ease_out_cubic))
+    a = ramp(t, 0.25, 1.0)
+    track = 24 * (1 - ramp(t, 0.25, 1.6, ease_out_expo)) + 1
+    c.text((960, 405), "galadyas_terminal", Font(LIGHT, 104), mix(BG_MID, FG, a), anchor="mt", tracking=track)
+    words(c, 960, 555, "The terminal workspace for Windows and Linux.", Font(LIGHT, 38), SOFT, t, 0.7, step=0.05)
+    chips = ["Tabs and panes", "Autocomplete", "Task manager", "Offline toolkits"]
+    cf = Font(SEMI, 20)
+    widths = [c.textlength(ch, cf, 1) + 44 for ch in chips]
+    x = 960 - (sum(widths) + 14 * (len(chips) - 1)) / 2
+    for i, (chip, w) in enumerate(zip(chips, widths)):
+        k = stagger(t, 1.2, i, 0.12, 0.5)
+        if k > 0:
+            y = 650 + 10 * (1 - k)
+            c.rect((x, y, x + w, y + 46), fill=mix(BG_MID, KEY, k), outline=mix(BG_MID, LINE, k), width=1.5, radius=23)
+            c.text((x + w / 2, y + 23), chip, cf, mix(BG_MID, FG, k), anchor="mm", tracking=1)
+        x += w + 14
 
 
 # ---------------------------------------------------------------- 2. the terminal
 
 T0 = 3.8                              # the terminal choreography below is written from 3.8 s to 27.4 s
-START = 2.6                           # where the terminal clip now starts in the 30 s cut
+START = 3.3                           # where the terminal clip now starts in the 30 s cut
 # Time remap (film time -> choreography time): plays each beat faster, idle holds fastest.
-REMAP = [(2.6, 3.8), (3.6, 4.8), (6.4, 9.3), (9.8, 14.6), (13.4, 21.0), (17.4, 27.4)]
+REMAP = [(3.3, 3.8), (4.1, 4.8), (6.4, 9.3), (9.8, 14.6), (13.4, 21.0), (17.4, 27.4)]
 X0, Y0, X1, Y1 = 150, 92, 1770, 892   # window
 PROMPT = [("anas@workstation", GRN), (" ~/projects/pipeline", ACC), (" (main)", VIO), (" $ ", FG)]
 
@@ -125,7 +137,7 @@ def window(c, T):
             c.rect((tx + 10, Y0 + 46, tx + w - 10, Y0 + 48), fill=ACC)
         c.text((tx + 18, Y0 + 17), name, M18, FG if i == 0 else DIM)
         tx += w + 6
-    c.text((X1 - 24, Y0 + 17), "mindas_terminal", M18, DIM, anchor="ra")
+    c.text((X1 - 24, Y0 + 17), "galadyas_terminal", M18, DIM, anchor="ra")
 
     # status bar: keys for the current mode
     sy = Y1 - 46
@@ -361,7 +373,7 @@ def ending(c, t):
     mark(c, 960, 330, 96, ramp(t, 0.1, 0.9, ease_out_cubic))
     a = ramp(t, 0.3, 1.2)
     track = 18 * (1 - ramp(t, 0.3, 1.9, ease_out_expo)) + 1
-    c.text((960, 440), "mindas_terminal", Font(LIGHT, 96), mix(BG_MID, FG, a), anchor="mt", tracking=track)
+    c.text((960, 440), "galadyas_terminal", Font(LIGHT, 96), mix(BG_MID, FG, a), anchor="mt", tracking=track)
     words(c, 960, 580, "No telemetry.  No network connections.  The same on Windows and Linux.", Font(LIGHT, 32),
           SOFT, t, 0.9, step=0.05)
     k = ramp(t, 1.8, 2.5, ease_out_cubic)
@@ -374,7 +386,7 @@ def ending(c, t):
 
 
 timeline = Timeline(
-    Clip(0.0, 3.0, lambda c, t: opening(c, t * 1.3), fade_in=0, fade_out=0.6),
+    Clip(0.0, 3.8, opening, fade_in=0, fade_out=0.6),
     Clip(START, 17.6, terminal, fade_in=0.5, fade_out=0.7),
     Clip(17.4, 21.8, speed),
     Clip(21.6, 25.6, prefix),
@@ -386,4 +398,4 @@ timeline = Timeline(
 video = Video(timeline, size=(W, H), fps=30, ssaa=2)
 
 if __name__ == "__main__":
-    print(video.render("examples/mindas_terminal/mindas_terminal_launch.mp4"))
+    print(video.render("examples/galadyas_terminal/galadyas_terminal_launch.mp4"))

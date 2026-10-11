@@ -1,4 +1,4 @@
-"""Projects: a list of template scenes plus format and theme, stored as .mscene (JSON).
+"""Projects: a list of template scenes plus format and theme, stored as .gvis (JSON).
 
 Loading is forgiving: unknown keys are dropped, missing fields get defaults and
 out-of-range values are clamped, so a hand-edited or older file still opens.
@@ -14,17 +14,19 @@ from pathlib import Path
 
 from . import effects as fx
 from .canvas import Canvas
+from .cosmos import galaxy, starfield
 from .render import Video
 from .templates import TEMPLATES, Context
 from .themes import DEFAULT_THEME, PRESETS, Theme, hex_to_rgb
 from .timeline import Clip, Timeline
 
 SCHEMA = 1
-EXTENSION = ".mscene"
+EXTENSION = ".gvis"
 FORMATS = {"landscape": ("Landscape 16:9", (1920, 1080)),
            "portrait": ("Portrait 9:16", (1080, 1920)),
            "square": ("Square 1:1", (1080, 1080))}
 FPS_CHOICES = (24, 25, 30, 60)
+BACKDROPS = {"glow": "Soft glow", "stars": "Starfield", "galaxy": "Whirlpool Galaxy"}
 MIN_SCENE, MAX_SCENE = 1.5, 120.0
 
 
@@ -68,6 +70,7 @@ class Project:
     theme: str = DEFAULT_THEME
     accent: str = ""           # hex override of the theme accent; empty uses the theme's
     transition: float = 0.6
+    backdrop: str = "glow"
     audio: str = ""
     scenes: list[Scene] = field(default_factory=list)
     base_dir: Path | None = field(default=None, compare=False)
@@ -105,8 +108,8 @@ class Project:
     # ---------------------------------------------------------------- files
 
     def to_dict(self) -> dict:
-        return {"app": "mindas_scene", "schema": SCHEMA, "name": self.name, "format": self.format, "fps": self.fps,
-                "theme": self.theme, "accent": self.accent, "transition": self.transition, "audio": self.audio,
+        return {"app": "galadyas_visionary", "schema": SCHEMA, "name": self.name, "format": self.format, "fps": self.fps,
+                "theme": self.theme, "accent": self.accent, "transition": self.transition, "backdrop": self.backdrop, "audio": self.audio,
                 "scenes": [{"id": s.id, "template": s.template, "duration": s.duration, "fields": s.fields}
                            for s in self.scenes]}
 
@@ -115,10 +118,10 @@ class Project:
 
     @classmethod
     def from_dict(cls, data: dict, base_dir: Path | None = None) -> "Project":
-        if not isinstance(data, dict) or data.get("app") != "mindas_scene":
-            raise ProjectError("This file is not a mindas_scene project.")
+        if not isinstance(data, dict) or data.get("app") != "galadyas_visionary":
+            raise ProjectError("This file is not a galadyas_visionary project.")
         if int(data.get("schema", 1)) > SCHEMA:
-            raise ProjectError("This project was saved by a newer version of mindas_scene. Please update.")
+            raise ProjectError("This project was saved by a newer version of galadyas_visionary. Please update.")
         p = cls(base_dir=base_dir)
         p.name = str(data.get("name") or "Untitled")[:120]
         p.format = data.get("format") if data.get("format") in FORMATS else "landscape"
@@ -126,6 +129,7 @@ class Project:
         p.theme = data.get("theme") if data.get("theme") in PRESETS else DEFAULT_THEME
         p.accent = data.get("accent") if hex_to_rgb(data.get("accent") or "") else ""
         p.transition = _clamp(data.get("transition"), 0.0, 1.5, 0.6)
+        p.backdrop = data.get("backdrop") if data.get("backdrop") in BACKDROPS else "glow"
         p.audio = str(data.get("audio") or "")
         for raw in data.get("scenes") or []:
             if not isinstance(raw, dict) or raw.get("template") not in TEMPLATES:
@@ -205,7 +209,7 @@ def build_video(project_json: str, base_dir: str = "") -> Video:
                           fade_in=p.transition if i else 0.0,
                           fade_out=p.transition if i < n - 1 else 0.8,
                           isolate=tpl.isolate))
-    timeline = Timeline(*clips, background=partial(_background, theme), foreground=partial(_finish, theme))
+    timeline = Timeline(*clips, background=partial(_background, theme, p.backdrop), foreground=partial(_finish, theme))
     return Video(timeline, duration=max(p.duration, 0.5), size=p.size, fps=p.fps, ssaa=2,
                  background=theme.bg_bottom, dither=2.0 if theme.dark else 1.0,
                  factory=(build_video, (project_json, base_dir)))
@@ -215,8 +219,8 @@ def _draw_scene(draw, fields, ctx, c: Canvas, t: float) -> None:
     draw(c, t, fields, ctx)
 
 
-def _background(theme: Theme, c: Canvas, t: float) -> None:
-    """Theme gradient and two slow lights, painted at quarter resolution."""
+def _background(theme: Theme, backdrop: str, c: Canvas, t: float) -> None:
+    """Theme gradient and two slow lights (painted at quarter resolution), plus stars or the galaxy."""
     from PIL import Image
     small = Canvas(c.w, c.h, scale=c.scale / 4)
     fx.vertical_gradient(small, theme.bg_top, theme.bg_bottom)
@@ -225,6 +229,12 @@ def _background(theme: Theme, c: Canvas, t: float) -> None:
             r * 0.47, theme.accent, theme.glow)
     fx.glow(small, (c.w * (0.8 - 0.08 * math.sin(t * 0.09)), c.h * 0.9), r * 0.4, theme.accent2, theme.glow * 0.6)
     c.img.paste(small.img.resize(c.img.size, Image.Resampling.BILINEAR))
+    if backdrop in ("stars", "galaxy") and theme.dark:
+        starfield(c, t)
+    if backdrop == "galaxy":
+        wide = c.w > c.h * 1.2
+        galaxy(c, t, (c.w * (0.76 if wide else 0.5), c.h * (0.45 if wide else 0.30)), min(c.w, c.h) * 0.36,
+               brightness=0.45 if theme.dark else 0.25)
 
 
 def _finish(theme: Theme, c: Canvas, t: float) -> None:

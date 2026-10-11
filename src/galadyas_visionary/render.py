@@ -19,7 +19,7 @@ from .canvas import Canvas
 
 Draw = Callable[[Canvas, float], None]
 Progress = Callable[[int, int], None]
-_JOB_MODULE = "_mindas_scene_job"
+_JOB_MODULE = "_galadyas_visionary_job"
 
 # name: (supersampling, fps or None for the video's own)
 QUALITY = {"draft": (1, 15), "standard": (1, None), "high": (2, None)}

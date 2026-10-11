@@ -1,18 +1,20 @@
-# mindas_scene
+# galadyas_visionary
 
-Polished product, marketing and report videos, made from templates. Offline, on your own machine.
+Polished videos for products, launches, reports and lessons, made from templates. Offline, on your own machine.
 
-mindas_scene is a desktop studio for startups, companies and individuals who need to introduce a project, launch a product or present results, without a motion designer and without uploading anything anywhere. Pick scenes, type your words, choose a theme, export an MP4.
+galadyas_visionary is a desktop studio for people in technology everywhere: startups and companies introducing a product, engineers and teams presenting results, instructors and subject-matter experts explaining a topic, and individuals sharing their work. No motion designer, no account, nothing uploaded. Pick scenes, type your words, choose a theme, export an MP4.
 
 > **Status:** release candidate for 1.0. The first public release will be the stable 1.0.
 
 ## What you get
 
 - **A focused studio.** Scenes on the left, live preview in the middle, settings on the right. Play, scrub, reorder, export.
-- **Templates that look designed.** Title, statement, key points, feature grid, key numbers, bar chart, product showcase and end card, each with considered motion and typography.
+- **Templates that look designed.** Title, statement, key points, feature grid, key numbers, bar chart, product showcase, steps, code, cosmic title and end card, each with considered motion and typography.
+- **Made for teaching too.** Steps lays out a process or lesson; Code types a snippet out line by line, with comments dimmed.
+- **Cinematic backdrops.** Soft glow, a drifting starfield, or a procedural model of the Whirlpool Galaxy (M51) with its companion NGC 5195.
 - **Every format.** 16:9, 9:16 and 1:1 from the same project. Layouts adapt; long text shrinks and wraps instead of overflowing.
 - **Themes.** Midnight, Graphite, Ocean, Ember and Daylight, plus your own accent color.
-- **Fast.** Live preview renders in about 10 ms per frame; export uses every CPU core. High quality is 2× supersampled.
+- **Fast.** Live preview renders most scenes in about 10 ms per frame; export uses every CPU core. High quality is 2× supersampled.
 - **Consistent everywhere.** Inter and JetBrains Mono are bundled, so a project renders the same on Windows, macOS and Linux.
 - **Private.** No account, no telemetry, no network access.
 - **For developers too.** The same engine is a Python API for fully custom films.
@@ -22,19 +24,19 @@ mindas_scene is a desktop studio for startups, companies and individuals who nee
 Requires Python 3.11+ and [uv](https://docs.astral.sh/uv/). ffmpeg is bundled.
 
 ```
-git clone https://github.com/98-Anas/mindas_scene && cd mindas_scene
+git clone https://github.com/98-Anas/galadyas_visionary && cd galadyas_visionary
 uv sync
-uv run mindas-scene studio
+uv run galadyas-visionary studio
 ```
 
 ## Using the studio
 
 1. **+ Add** scenes from the templates; drag to reorder.
 2. Fill in the fields on the **Scene** tab. Lists take one item per line; pairs use `|`, for example `98% | satisfaction`.
-3. Set format, theme, accent, frame rate, crossfade and an optional soundtrack on the **Project** tab.
+3. Set format, theme, backdrop, accent, frame rate, crossfade and an optional soundtrack on the **Project** tab.
 4. **Export video**: High (2× supersampled), Standard (faster) or Draft (quick check). Exports can be cancelled at any time.
 
-Projects are saved as `.mscene` files (readable JSON). Images and audio inside the project folder are stored with relative paths, so a project folder can be moved or shared as a whole.
+Projects are saved as `.gvis` files (readable JSON). Images and audio inside the project folder are stored with relative paths, so a project folder can be moved or shared as a whole.
 
 | Shortcut | Action |
 |---|---|
@@ -47,16 +49,16 @@ Projects are saved as `.mscene` files (readable JSON). Images and audio inside t
 ## Command line
 
 ```
-uv run mindas-scene render project.mscene -o video.mp4 -q high   # or standard, draft
-uv run mindas-scene still project.mscene 2.5 10                 # PNG frames at given seconds
+uv run galadyas-visionary render project.gvis -o video.mp4 -q high   # or standard, draft
+uv run galadyas-visionary still project.gvis 2.5 10                 # PNG frames at given seconds
 ```
 
 ## Examples
 
 | Example | Made with | Files |
 |---|---|---|
-| mindas series teaser (22 s) | Studio templates | [project](examples/mindas_series/mindas_series.mscene), [video](examples/mindas_series/mindas_series_teaser.mp4) |
-| mindas_terminal launch film (30 s) | Python API | [script](examples/mindas_terminal/launch.py), [video](examples/mindas_terminal/mindas_terminal_launch.mp4) |
+| galadyas series teaser (25 s) | Studio templates | [project](examples/galadyas_series/galadyas_series.gvis), [video](examples/galadyas_series/galadyas_series_teaser.mp4) |
+| galadyas_terminal launch film (30 s) | Python API | [script](examples/galadyas_terminal/launch.py), [video](examples/galadyas_terminal/galadyas_terminal_launch.mp4) |
 | Title card | Python API | [script](examples/pillow/title_card.py) |
 | Hello scene | Manim (optional extra) | [script](examples/manim/hello_scene.py) |
 
@@ -65,8 +67,8 @@ uv run mindas-scene still project.mscene 2.5 10                 # PNG frames at 
 For films the templates do not cover, draw frames directly. A video is a function of time:
 
 ```python
-from mindas_scene import Clip, Font, Timeline, Video, mix, ramp
-from mindas_scene import effects as fx
+from galadyas_visionary import Clip, Font, Timeline, Video, mix, ramp
+from galadyas_visionary import effects as fx
 
 TITLE = Font("Inter-Light.ttf", 96)
 
@@ -81,7 +83,7 @@ video = Video(Timeline(Clip(0, 4, title), background=background))
 ```
 
 ```
-uv run mindas-scene render scene.py --draft
+uv run galadyas-visionary render scene.py --draft
 ```
 
 | Module | What it gives you |
@@ -104,4 +106,4 @@ The tests cover the engine, project files (including damaged, foreign and newer 
 
 ## License
 
-Apache-2.0. Bundled fonts: Inter and JetBrains Mono, both under the SIL Open Font License (see `src/mindas_scene/fonts`).
+Apache-2.0. Bundled fonts: Inter and JetBrains Mono, both under the SIL Open Font License (see `src/galadyas_visionary/fonts`).

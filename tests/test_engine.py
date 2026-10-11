@@ -1,5 +1,5 @@
-from mindas_scene import Canvas, Clip, Timeline, Video, fade, keyframes, mix, ramp, stagger
-from mindas_scene import effects as fx
+from galadyas_visionary import Canvas, Clip, Timeline, Video, fade, keyframes, mix, ramp, stagger
+from galadyas_visionary import effects as fx
 
 
 def test_ramp_bounds():
@@ -74,7 +74,7 @@ def test_render_writes_mp4(tmp_path):
 
 
 def test_tracked_text_shares_one_baseline():
-    from mindas_scene import Font
+    from galadyas_visionary import Font
     font = Font(("segoeuil.ttf", "DejaVuSans.ttf"), 40)
     plain, tracked = Canvas(400, 100, background=(0, 0, 0)), Canvas(400, 100, background=(0, 0, 0))
     plain.text((10, 20), "mind_al", font, (255, 255, 255), anchor="lt")

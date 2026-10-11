@@ -1,6 +1,6 @@
-"""mindas-scene studio [FILE] | render FILE | still FILE T [T ...]
+"""galadyas-visionary studio [FILE] | render FILE | still FILE T [T ...]
 
-FILE is a project (.mscene) or a scene script (.py) that defines a Video.
+FILE is a project (.gvis) or a scene script (.py) that defines a Video.
 """
 
 import argparse
@@ -23,7 +23,7 @@ def _video(path: str):
 
 def main(argv=None) -> int:
     multiprocessing.freeze_support()
-    p = argparse.ArgumentParser(prog="mindas-scene", description="Make videos from templates or code.")
+    p = argparse.ArgumentParser(prog="galadyas-visionary", description="Make videos from templates or code.")
     sub = p.add_subparsers(dest="command", required=True)
 
     s = sub.add_parser("studio", help="open the desktop app")

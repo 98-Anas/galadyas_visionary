@@ -1,4 +1,4 @@
-"""mindas_scene Studio: build a video from templates, preview it live, export to MP4."""
+"""galadyas_visionary Studio: build a video from templates, preview it live, export to MP4."""
 
 import multiprocessing
 import os
@@ -18,15 +18,15 @@ from PySide6.QtWidgets import (QAbstractItemView, QApplication, QColorDialog, QC
 
 from .. import __version__
 from ..canvas import BUNDLED_FONTS
-from ..project import EXTENSION, FORMATS, FPS_CHOICES, MAX_SCENE, MIN_SCENE, Project, ProjectError, Scene, \
+from ..project import BACKDROPS, EXTENSION, FORMATS, FPS_CHOICES, MAX_SCENE, MIN_SCENE, Project, ProjectError, Scene, \
     sample_project
 from ..render import Cancelled
 from ..templates import TEMPLATES
 from ..themes import PRESETS
 from . import style
 
-APP = "mindas_scene Studio"
-FILTER = f"mindas_scene project (*{EXTENSION})"
+APP = "galadyas_visionary Studio"
+FILTER = f"galadyas_visionary project (*{EXTENSION})"
 
 
 # ================================================================ preview rendering
@@ -350,7 +350,7 @@ class ExportDialog(QDialog):
 class MainWindow(QMainWindow):
     def __init__(self, path: str | None = None):
         super().__init__()
-        self.settings = QSettings("mindas", "mindas_scene")
+        self.settings = QSettings("galadyas", "galadyas_visionary")
         self.project = sample_project()
         self.path: Path | None = None
         self.dirty = False
@@ -462,7 +462,7 @@ class MainWindow(QMainWindow):
     def _build_actions(self):
         tb = self.addToolBar("Main")
         tb.setMovable(False)
-        brand = QLabel("  mindas_scene  ", objectName="heading")
+        brand = QLabel("  galadyas_visionary  ", objectName="heading")
         tb.addWidget(brand)
 
         def act(text, shortcut, fn, tip=""):
@@ -639,9 +639,12 @@ class MainWindow(QMainWindow):
             if f.kind == "text":
                 w = QLineEdit(value)
                 w.textChanged.connect(lambda v, k=f.key: self._set_field(s, k, v))
-            elif f.kind in ("multiline", "list"):
+            elif f.kind in ("multiline", "list", "code"):
                 w = QPlainTextEdit(value)
-                w.setFixedHeight(96 if f.kind == "multiline" else 132)
+                w.setFixedHeight({"multiline": 96, "list": 132, "code": 200}[f.kind])
+                if f.kind == "code":
+                    w.setFont(QFont("JetBrains Mono", 9))
+                    w.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
                 w.textChanged.connect(lambda k=f.key, w=w: self._set_field(s, k, w.toPlainText()))
             else:  # image
                 w = FilePicker(value, f"Choose {f.label.lower()}", "Images (*.png *.jpg *.jpeg *.webp *.bmp)",
@@ -684,6 +687,13 @@ class MainWindow(QMainWindow):
         theme.currentTextChanged.connect(lambda v: self._set_project("theme", v))
         add("Theme", theme)
 
+        backdrop = QComboBox()
+        for key, label in BACKDROPS.items():
+            backdrop.addItem(label, key)
+        backdrop.setCurrentIndex(list(BACKDROPS).index(p.backdrop))
+        backdrop.currentIndexChanged.connect(lambda _: self._set_project("backdrop", backdrop.currentData()))
+        add("Backdrop", backdrop)
+
         accent_row = QWidget()
         al = QHBoxLayout(accent_row)
         al.setContentsMargins(0, 0, 0, 0)
@@ -713,7 +723,7 @@ class MainWindow(QMainWindow):
         add("Soundtrack", audio)
         lay.addWidget(hint("Optional. The video keeps its own length; longer audio is trimmed."))
         lay.addStretch(1)
-        lay.addWidget(hint(f"mindas_scene {__version__}"))
+        lay.addWidget(hint(f"galadyas_visionary {__version__}"))
         self.project_scroll.setWidget(page)
 
     def _set_field(self, scene, key, value):

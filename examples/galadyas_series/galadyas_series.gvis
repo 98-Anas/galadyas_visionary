@@ -1,27 +1,28 @@
 {
-  "app": "mindas_scene",
+  "app": "galadyas_visionary",
   "schema": 1,
-  "name": "mindas series",
+  "name": "galadyas series",
   "format": "landscape",
   "fps": 30,
   "theme": "Midnight",
   "accent": "",
-  "transition": 0.7,
+  "transition": 0.8,
+  "backdrop": "stars",
   "audio": "",
   "scenes": [
     {
-      "id": "83e1ecf6",
-      "template": "title",
-      "duration": 4.6,
+      "id": "bae5a687",
+      "template": "cosmic",
+      "duration": 6.8,
       "fields": {
-        "logo": "",
-        "eyebrow": "mindas",
+        "eyebrow": "galadyas",
         "title": "Something is taking shape.",
-        "subtitle": "A series of open projects, built in public."
+        "subtitle": "A series of open projects, built in public.",
+        "call_to_action": ""
       }
     },
     {
-      "id": "5551b9b8",
+      "id": "a3eba48d",
       "template": "statement",
       "duration": 4.8,
       "fields": {
@@ -30,7 +31,7 @@
       }
     },
     {
-      "id": "a5eed2c5",
+      "id": "8d81b019",
       "template": "features",
       "duration": 6.0,
       "fields": {
@@ -40,22 +41,22 @@
       }
     },
     {
-      "id": "21dbe171",
+      "id": "79a9eb32",
       "template": "statement",
-      "duration": 4.6,
+      "duration": 4.4,
       "fields": {
-        "text": "Built to help people learn, create and grow, responsibly.",
+        "text": "Built to help people everywhere learn, create and grow, responsibly.",
         "attribution": ""
       }
     },
     {
-      "id": "62b860fb",
-      "template": "end",
-      "duration": 5.0,
+      "id": "9c716012",
+      "template": "cosmic",
+      "duration": 6.4,
       "fields": {
-        "logo": "",
-        "title": "mindas",
-        "tagline": "A series of universal projects. More to come.",
+        "eyebrow": "",
+        "title": "galadyas",
+        "subtitle": "A series of universal projects. More to come.",
         "call_to_action": "Stay tuned"
       }
     }
