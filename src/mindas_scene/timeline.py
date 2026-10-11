@@ -18,6 +18,7 @@ class Clip:
     draw: Draw
     fade_in: float = 0.6
     fade_out: float = 0.6
+    isolate: bool = True  # draw on a private layer even when fully visible (needed if draw() uses camera or blur)
 
     def opacity(self, t: float) -> float:
         a = ramp(t, self.start, self.start + self.fade_in) if self.fade_in > 0 else 1.0
@@ -43,7 +44,9 @@ class Timeline:
         for clip in self.clips:
             if clip.start <= t < clip.end:
                 opacity = clip.opacity(t)
-                if opacity > 0:
+                if opacity >= 1 and not clip.isolate:
+                    clip.draw(c, t - clip.start)
+                elif opacity > 0:
                     layer = c.layer()
                     clip.draw(layer, t - clip.start)
                     c.composite(layer, opacity)

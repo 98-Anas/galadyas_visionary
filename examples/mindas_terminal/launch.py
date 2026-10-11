@@ -1,10 +1,10 @@
-"""mindas_terminal launch film: 45 s, 1080p, 2x supersampled.
+"""mindas_terminal launch film: 30 s, 1080p, 2x supersampled.
 
     uv run mindas-scene render examples/mindas_terminal/launch.py -o examples/mindas_terminal/mindas_terminal_launch.mp4
     uv run mindas-scene still examples/mindas_terminal/launch.py 7 13 18 24 30 36 44
 
-Every figure on screen comes from the mindas_terminal README. Fonts fall back to
-DejaVu where Segoe UI and Cascadia are not installed.
+Every figure on screen comes from the mindas_terminal README. Uses the fonts
+bundled with mindas_scene, so it renders the same on every OS.
 """
 
 import math
@@ -12,7 +12,7 @@ import math
 from PIL import Image
 
 from mindas_scene import (Canvas, Clip, Font, Timeline, Video, clamp, ease_out_cubic, ease_out_expo, fade, keyframes,
-                          mix, ramp, stagger)
+                          linear, mix, ramp, stagger)
 from mindas_scene import effects as fx
 
 W, H = 1920, 1080
@@ -23,9 +23,9 @@ WIN, BAR, LINE, KEY = (15, 18, 26), (21, 25, 35), (38, 44, 60), (28, 33, 46)
 FG, SOFT, DIM = (220, 226, 240), (152, 162, 186), (98, 108, 132)
 ACC, VIO, GRN, YEL, RED = (122, 162, 247), (187, 154, 247), (158, 206, 106), (224, 175, 104), (247, 118, 142)
 
-MONO = ("CascadiaMono.ttf", "JetBrainsMono-Regular.ttf", "DejaVuSansMono.ttf")
-LIGHT = ("segoeuil.ttf", "Inter-Light.ttf", "DejaVuSans-ExtraLight.ttf", "DejaVuSans.ttf")
-SEMI = ("seguisb.ttf", "Inter-SemiBold.ttf", "DejaVuSans-Bold.ttf")
+MONO = ("JetBrainsMono-Regular.ttf",)
+LIGHT = ("Inter-Light.ttf",)
+SEMI = ("Inter-SemiBold.ttf",)
 M22, M20, M18 = Font(MONO, 22), Font(MONO, 20), Font(MONO, 18)
 
 
@@ -84,7 +84,10 @@ def opening(c, t):
 
 # ---------------------------------------------------------------- 2. the terminal
 
-T0 = 3.8                              # clip start, absolute seconds
+T0 = 3.8                              # the terminal choreography below is written from 3.8 s to 27.4 s
+START = 2.6                           # where the terminal clip now starts in the 30 s cut
+# Time remap (film time -> choreography time): plays each beat faster, idle holds fastest.
+REMAP = [(2.6, 3.8), (3.6, 4.8), (6.4, 9.3), (9.8, 14.6), (13.4, 21.0), (17.4, 27.4)]
 X0, Y0, X1, Y1 = 150, 92, 1770, 892   # window
 PROMPT = [("anas@workstation", GRN), (" ~/projects/pipeline", ACC), (" (main)", VIO), (" $ ", FG)]
 
@@ -290,7 +293,7 @@ def keypills(c, T):
 
 
 def terminal(c, u):
-    T = u + T0
+    T = keyframes(u + START, REMAP, easing=linear)
     zoom, fxx, fyy = keyframes(T, CAM)
     rise = 46 * (1 - ramp(T, T0, T0 + 1.4, ease_out_cubic))
     win = c.layer()
@@ -354,28 +357,28 @@ def prefix(c, t):
 
 # ---------------------------------------------------------------- 5. principles, 6. end
 
-def principles(c, t):
-    for i, (s, col) in enumerate([("No telemetry.", FG), ("No network connections.", FG),
-                                  ("The same on Windows and Linux.", ACC)]):
-        words(c, 960, 390 + i * 96, s, Font(LIGHT, 54), col, t, 0.2 + i * 0.5, step=0.07)
-
-
 def ending(c, t):
-    mark(c, 960, 360, 96, ramp(t, 0.1, 0.9, ease_out_cubic))
-    a = ramp(t, 0.4, 1.3)
-    track = 18 * (1 - ramp(t, 0.4, 2.0, ease_out_expo)) + 1
-    c.text((960, 470), "mindas_terminal", Font(LIGHT, 96), mix(BG_MID, FG, a), anchor="mt", tracking=track)
-    words(c, 960, 610, "Open source  ·  Pre-release  ·  Feedback welcome", Font(LIGHT, 34), SOFT, t, 1.0,
-          step=0.05)
+    mark(c, 960, 330, 96, ramp(t, 0.1, 0.9, ease_out_cubic))
+    a = ramp(t, 0.3, 1.2)
+    track = 18 * (1 - ramp(t, 0.3, 1.9, ease_out_expo)) + 1
+    c.text((960, 440), "mindas_terminal", Font(LIGHT, 96), mix(BG_MID, FG, a), anchor="mt", tracking=track)
+    words(c, 960, 580, "No telemetry.  No network connections.  The same on Windows and Linux.", Font(LIGHT, 32),
+          SOFT, t, 0.9, step=0.05)
+    k = ramp(t, 1.8, 2.5, ease_out_cubic)
+    label = "Open source  ·  Pre-release  ·  Feedback welcome"
+    lf = Font(SEMI, 22)
+    w = c.textlength(label, lf, 1.5) + 64
+    y = 668 + 10 * (1 - k)
+    c.rect((960 - w / 2, y, 960 + w / 2, y + 56), outline=mix(BG_MID, ACC, k), width=1.5, radius=28)
+    c.text((960, y + 28), label, lf, mix(BG_MID, FG, k), anchor="mm", tracking=1.5)
 
 
 timeline = Timeline(
-    Clip(0.0, 4.4, opening, fade_in=0, fade_out=0.8),
-    Clip(T0, 27.4, terminal, fade_in=0.6, fade_out=0.8),
-    Clip(27.2, 33.4, speed),
-    Clip(33.2, 38.6, prefix),
-    Clip(38.4, 42.2, principles),
-    Clip(42.0, 45.0, ending, fade_out=1.0),
+    Clip(0.0, 3.0, lambda c, t: opening(c, t * 1.3), fade_in=0, fade_out=0.6),
+    Clip(START, 17.6, terminal, fade_in=0.5, fade_out=0.7),
+    Clip(17.4, 21.8, speed),
+    Clip(21.6, 25.6, prefix),
+    Clip(25.4, 30.0, ending, fade_out=0.9),
     background=background,
     foreground=finish,
 )

@@ -1,15 +1,18 @@
-"""mindas_scene: videos and animations from code."""
+"""mindas_scene: polished videos from templates or code."""
 
 from . import effects
 from .canvas import Canvas, Font, find_font
 from .motion import (clamp, ease, ease_in_out_cubic, ease_out_back, ease_out_cubic, ease_out_expo, fade, keyframes,
                      lerp, linear, mix, ramp, stagger)
-from .render import Video, load
+from .project import Project, Scene, build_video
+from .render import Cancelled, Video, load
+from .templates import TEMPLATES
+from .themes import PRESETS, Theme
 from .timeline import Clip, Timeline
 
 __all__ = [
-    "Canvas", "Clip", "Font", "Timeline", "Video", "clamp", "ease", "ease_in_out_cubic", "ease_out_back",
-    "ease_out_cubic", "ease_out_expo", "effects", "fade", "find_font", "keyframes", "lerp", "linear", "load",
-    "mix", "ramp", "stagger",
+    "Cancelled", "Canvas", "Clip", "Font", "PRESETS", "Project", "Scene", "TEMPLATES", "Theme", "Timeline", "Video",
+    "build_video", "clamp", "ease", "ease_in_out_cubic", "ease_out_back", "ease_out_cubic", "ease_out_expo",
+    "effects", "fade", "find_font", "keyframes", "lerp", "linear", "load", "mix", "ramp", "stagger",
 ]
-__version__ = "0.2.0"
+__version__ = "1.0.0rc1"

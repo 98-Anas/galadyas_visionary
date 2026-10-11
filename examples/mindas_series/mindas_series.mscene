@@ -1,0 +1,63 @@
+{
+  "app": "mindas_scene",
+  "schema": 1,
+  "name": "mindas series",
+  "format": "landscape",
+  "fps": 30,
+  "theme": "Midnight",
+  "accent": "",
+  "transition": 0.7,
+  "audio": "",
+  "scenes": [
+    {
+      "id": "83e1ecf6",
+      "template": "title",
+      "duration": 4.6,
+      "fields": {
+        "logo": "",
+        "eyebrow": "mindas",
+        "title": "Something is taking shape.",
+        "subtitle": "A series of open projects, built in public."
+      }
+    },
+    {
+      "id": "5551b9b8",
+      "template": "statement",
+      "duration": 4.8,
+      "fields": {
+        "text": "Technology works best when it serves people: their time, their privacy, their trust.",
+        "attribution": ""
+      }
+    },
+    {
+      "id": "a5eed2c5",
+      "template": "features",
+      "duration": 6.0,
+      "fields": {
+        "heading": "One standard, every project",
+        "subheading": "Different tools. The same principles.",
+        "items": "Open | Built in public, free to use and to learn from.\nPrivate by design | No telemetry. Your work stays yours.\nMade to last | Released when stable, shaped by your feedback."
+      }
+    },
+    {
+      "id": "21dbe171",
+      "template": "statement",
+      "duration": 4.6,
+      "fields": {
+        "text": "Built to help people learn, create and grow, responsibly.",
+        "attribution": ""
+      }
+    },
+    {
+      "id": "62b860fb",
+      "template": "end",
+      "duration": 5.0,
+      "fields": {
+        "logo": "",
+        "title": "mindas",
+        "tagline": "A series of universal projects. More to come.",
+        "call_to_action": "Stay tuned"
+      }
+    }
+  ]
+}

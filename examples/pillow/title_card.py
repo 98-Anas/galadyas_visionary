@@ -7,8 +7,8 @@ from mindas_scene import Clip, Font, Timeline, Video, ease_out_expo, mix, ramp
 from mindas_scene import effects as fx
 
 BG_TOP, BG_BOT, FG, DIM, ACC = (13, 15, 25), (5, 6, 10), (220, 226, 240), (130, 140, 162), (122, 162, 247)
-TITLE = Font(("segoeuil.ttf", "Inter-Light.ttf", "DejaVuSans.ttf"), 104)
-SUB = Font(("segoeuil.ttf", "Inter-Light.ttf", "DejaVuSans.ttf"), 38)
+TITLE = Font("Inter-Light.ttf", 104)
+SUB = Font("Inter-Light.ttf", 38)
 
 
 def background(c, t):

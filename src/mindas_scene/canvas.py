@@ -10,7 +10,9 @@ import sys
 from functools import lru_cache
 from pathlib import Path
 
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageOps
+
+BUNDLED_FONTS = Path(__file__).parent / "fonts"
 
 
 def _font_dirs() -> list[Path]:
@@ -31,6 +33,8 @@ def find_font(*names: str) -> str | None:
     for name in names:
         if Path(name).is_file():
             return str(name)
+        if (BUNDLED_FONTS / name).is_file():
+            return str(BUNDLED_FONTS / name)
         for d in _font_dirs():
             if (d / name).is_file():
                 return str(d / name)
@@ -145,8 +149,54 @@ class Canvas:
             self.draw.text((x, baseline), ch, font=f, fill=_rgba(fill), anchor="ls")
             x += w + tr
 
+    def wrap(self, text: str, font: Font, max_width: float) -> list[str]:
+        """Break text into lines no wider than `max_width`; blank lines are kept."""
+        lines = []
+        for para in text.splitlines() or [""]:
+            line = ""
+            for word in para.split():
+                trial = f"{line} {word}" if line else word
+                if line and self.textlength(trial, font) > max_width:
+                    lines.append(line)
+                    line = word
+                else:
+                    line = trial
+            lines.append(line)
+        return lines
+
+    def image(self, path, box, fit: str = "contain", radius: float = 0) -> tuple | None:
+        """Draw an image file inside `box` ("contain" or "cover"). Returns the drawn box, or None if unreadable."""
+        x0, y0, x1, y1 = box
+        s = self.scale
+        try:
+            im = _fitted(str(path), os.path.getmtime(path), round((x1 - x0) * s), round((y1 - y0) * s), fit,
+                         round(radius * s))
+        except (OSError, ValueError):
+            return None
+        px = x0 * s + ((x1 - x0) * s - im.width) / 2
+        py = y0 * s + ((y1 - y0) * s - im.height) / 2
+        paste(self.img, im, px, py)
+        return (px / s, py / s, (px + im.width) / s, (py + im.height) / s)
+
     def to_image(self, size=None) -> Image.Image:
         img = self.img.convert("RGB")
         if size and img.size != tuple(size):
             img = img.resize(size, Image.Resampling.LANCZOS)
         return img
+
+
+@lru_cache(maxsize=32)
+def _fitted(path: str, mtime: float, w: int, h: int, fit: str, radius: int) -> Image.Image:
+    with Image.open(path) as src:
+        im = ImageOps.exif_transpose(src).convert("RGBA")
+    if w < 1 or h < 1:
+        raise ValueError("empty box")
+    if fit == "cover":
+        im = ImageOps.fit(im, (w, h), Image.Resampling.LANCZOS)
+    else:
+        im = ImageOps.contain(im, (w, h), Image.Resampling.LANCZOS)
+    if radius:
+        mask = Image.new("L", im.size, 0)
+        ImageDraw.Draw(mask).rounded_rectangle((0, 0, im.width - 1, im.height - 1), radius, fill=255)
+        im.putalpha(Image.composite(im.getchannel("A"), mask, mask))
+    return im
