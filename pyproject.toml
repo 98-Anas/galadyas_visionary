@@ -1,0 +1,24 @@
+[project]
+name = "mindas-scene"
+version = "0.1.0"
+description = "Videos and animations written as code: a small Pillow + ffmpeg engine and Manim scenes."
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.11"
+dependencies = [
+    "pillow>=10",
+    "imageio-ffmpeg>=0.5",
+]
+
+[project.optional-dependencies]
+manim = ["manim>=0.18"]
+
+[dependency-groups]
+dev = ["pytest>=8"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mindas_scene"]
