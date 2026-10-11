@@ -11,3 +11,6 @@ media/
 *.mp4
 *.mov
 *.gif
+
+# showcase renders are part of the repo
+!examples/**/*.mp4

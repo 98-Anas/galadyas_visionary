@@ -1,7 +1,7 @@
 [project]
 name = "mindas-scene"
-version = "0.1.0"
-description = "Videos and animations written as code: a small Pillow + ffmpeg engine and Manim scenes."
+version = "0.2.0"
+description = "Videos and animations written as code: a supersampled Pillow + ffmpeg engine and Manim scenes."
 readme = "README.md"
 license = "Apache-2.0"
 requires-python = ">=3.11"
@@ -9,6 +9,9 @@ dependencies = [
     "pillow>=10",
     "imageio-ffmpeg>=0.5",
 ]
+
+[project.scripts]
+mindas-scene = "mindas_scene.cli:main"
 
 [project.optional-dependencies]
 manim = ["manim>=0.18"]

@@ -1,39 +1,31 @@
 """Smallest complete example: a five-second title card.
 
-    uv run python examples/pillow/title_card.py
+    uv run mindas-scene render examples/pillow/title_card.py
 """
 
-from PIL import Image, ImageDraw, ImageFont
+from mindas_scene import Clip, Font, Timeline, Video, ease_out_expo, mix, ramp
+from mindas_scene import effects as fx
 
-from mindas_scene import fade, mix, render
-
-W, H = 1920, 1080
-BG, FG, DIM = (9, 11, 16), (205, 214, 230), (98, 108, 130)
-
-
-def font(size):
-    try:
-        return ImageFont.truetype("DejaVuSans.ttf", size)
-    except OSError:
-        return ImageFont.load_default(size)
+BG_TOP, BG_BOT, FG, DIM, ACC = (13, 15, 25), (5, 6, 10), (220, 226, 240), (130, 140, 162), (122, 162, 247)
+TITLE = Font(("segoeuil.ttf", "Inter-Light.ttf", "DejaVuSans.ttf"), 104)
+SUB = Font(("segoeuil.ttf", "Inter-Light.ttf", "DejaVuSans.ttf"), 38)
 
 
-TITLE, SUB = font(96), font(40)
+def background(c, t):
+    fx.vertical_gradient(c, BG_TOP, BG_BOT)
+    fx.glow(c, (960 + 120 * t, 420), 800, ACC, 0.15)
 
 
-def centered(d, y, text, f, color):
-    d.text(((W - d.textlength(text, font=f)) / 2, y), text, font=f, fill=color)
+def title(c, t):
+    a = ramp(t, 0.2, 1.2)
+    tracking = 28 * (1 - ramp(t, 0.2, 2.0, ease_out_expo)) + 1
+    c.text((960, 440), "mindas_scene", TITLE, mix(BG_BOT, FG, a), anchor="mt", tracking=tracking)
+    c.text((960, 590 + 12 * (1 - ramp(t, 0.8, 1.8))), "Videos and animations, written as code.", SUB,
+           mix(BG_BOT, DIM, ramp(t, 0.8, 1.8)), anchor="mt")
 
 
-def frame(t):
-    img = Image.new("RGB", (W, H), BG)
-    d = ImageDraw.Draw(img)
-    a = fade(t, 0.2, 5.0, 0.8)
-    b = fade(t, 0.9, 5.0, 0.8)
-    centered(d, 430 - 12 * (1 - a), "mindas_scene", TITLE, mix(BG, FG, a))
-    centered(d, 570, "Videos and animations, written as code.", SUB, mix(BG, DIM, b))
-    return img
-
+video = Video(Timeline(Clip(0, 5, title, fade_in=0, fade_out=0.8), background=background,
+                       foreground=lambda c, t: fx.vignette(c, 0.5)))
 
 if __name__ == "__main__":
-    print(render(frame, "media/title_card.mp4", duration=5.0))
+    print(video.render("media/title_card.mp4"))
