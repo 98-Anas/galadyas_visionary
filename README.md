@@ -4,7 +4,7 @@ Polished videos for products, launches, reports and lessons, made from templates
 
 galadyas_visionary is a desktop studio for people in technology everywhere: startups and companies introducing a product, engineers and teams presenting results, instructors and subject-matter experts explaining a topic, and individuals sharing their work. No motion designer, no account, nothing uploaded. Pick scenes, type your words, choose a theme, export an MP4.
 
-> **Status:** release candidate for 1.0. The first public release will be the stable 1.0.
+> **Status:** open source and under development (0.9). Expect changes until the first stable release, 1.0. Feedback and issues are welcome.
 
 ## What you get
 
@@ -57,7 +57,8 @@ uv run galadyas-visionary still project.gvis 2.5 10                 # PNG frames
 
 | Example | Made with | Files |
 |---|---|---|
-| galadyas series teaser (31 s) | Studio templates | [project](examples/galadyas_series/galadyas_series.gvis), [video](examples/galadyas_series/galadyas_series_teaser.mp4) |
+| galadyas_visionary demo (32 s), real footage of the studio | Python API + [capture tool](tools/capture_studio.py) | [script](examples/galadyas_visionary/demo.py), [video](examples/galadyas_visionary/galadyas_visionary_demo.mp4) |
+| galadyas series teaser (18 s) | Studio templates | [project](examples/galadyas_series/galadyas_series.gvis), [video](examples/galadyas_series/galadyas_series_teaser.mp4) |
 | galadyas_terminal launch film (30 s) | Python API | [script](examples/galadyas_terminal/launch.py), [video](examples/galadyas_terminal/galadyas_terminal_launch.mp4) |
 | Title card | Python API | [script](examples/pillow/title_card.py) |
 | Hello scene | Manim (optional extra) | [script](examples/manim/hello_scene.py) |

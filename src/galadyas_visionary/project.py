@@ -208,7 +208,7 @@ def build_video(project_json: str, base_dir: str = "") -> Video:
         clips.append(Clip(start, start + scene.duration, partial(_draw_scene, tpl.draw, scene.fields, ctx),
                           fade_in=p.transition if i else 0.0,
                           fade_out=p.transition if i < n - 1 else 0.8,
-                          isolate=tpl.isolate))
+                          isolate=tpl.isolate, zoom_in=1.035 if i else 1.0, zoom_out=0.985 if i < n - 1 else 1.0))
     timeline = Timeline(*clips, background=partial(_background, theme, p.backdrop), foreground=partial(_finish, theme))
     return Video(timeline, duration=max(p.duration, 0.5), size=p.size, fps=p.fps, ssaa=2,
                  background=theme.bg_bottom, dither=2.0 if theme.dark else 1.0,

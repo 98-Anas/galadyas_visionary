@@ -82,14 +82,23 @@ def fit(c: Canvas, text: str, kind: tuple, size: float, max_w: float, max_lines:
         size *= 0.92
 
 
-def lines_in(c, lines, x, y, font, color, t, start, ctx, lh, anchor="m", step=0.08, dur=0.8, rise=None):
-    """Lines that rise and fade in one after another. Returns the y below the block."""
-    rise = 18 * unit(c) if rise is None else rise
+def reveal(c, x, y, line, font, color, k, anchor="m"):
+    """One line rising into place from behind its own lower edge (a masked reveal), k from 0 to 1."""
+    if k <= 0 or not line:
+        return
+    w = c.textlength(line, font)
+    h = font.size * 1.32
+    pad = font.size * 0.25
+    x0 = x - w / 2 if anchor == "m" else (x - w if anchor == "r" else x)
+    box = Canvas(w + 2 * pad, h + pad, scale=c.scale)
+    box.text((pad, h * (1 - ease_out_expo(k)) * 0.9), line, font, color)
+    c.composite(box, min(1.0, k * 1.6), at=(x0 - pad, y))
+
+
+def lines_in(c, lines, x, y, font, color, t, start, ctx, lh, anchor="m", step=0.09, dur=1.0, rise=None):
+    """Lines revealed one after another, each rising from behind a mask. Returns the y below the block."""
     for i, line in enumerate(lines):
-        a = stagger(t, start, i, step, dur)
-        if a > 0 and line:
-            c.text((x, y + i * lh + rise * (1 - a)), line, font, mix(ctx.theme.bg_mid, color, a),
-                   anchor=anchor + "a")
+        reveal(c, x, y + i * lh, line, font, color, stagger(t, start, i, step, dur, easing=lambda v: v), anchor)
     return y + len(lines) * lh
 
 

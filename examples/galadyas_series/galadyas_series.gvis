@@ -11,62 +11,43 @@
   "audio": "",
   "scenes": [
     {
-      "id": "bae5a687",
+      "id": "9146d90d",
       "template": "cosmic",
-      "duration": 6.8,
+      "duration": 5.6,
       "fields": {
         "eyebrow": "galadyas",
-        "title": "Something is taking shape.",
-        "subtitle": "A series of open projects, built in public.",
+        "title": "Something different is taking shape.",
+        "subtitle": "Open-source projects, built in public.",
         "call_to_action": ""
       }
     },
     {
-      "id": "a3eba48d",
+      "id": "c9dbf689",
       "template": "statement",
-      "duration": 4.8,
+      "duration": 3.9,
       "fields": {
-        "text": "Technology works best when it serves people: their time, their privacy, their trust.",
+        "text": "Technology should serve people: their time, their privacy, their trust.",
         "attribution": ""
       }
     },
     {
-      "id": "d177d029",
+      "id": "6cc345f8",
       "template": "features",
-      "duration": 6.4,
+      "duration": 5.4,
       "fields": {
-        "heading": "The first projects",
-        "subheading": "Two tools, built in the open.",
-        "items": "galadyas_terminal | The terminal workspace for Windows and Linux. Available now in pre-release.\ngaladyas_visionary | Polished videos for products, reports and lessons. In development."
+        "heading": "Open source, built differently",
+        "subheading": "Both under development.",
+        "items": "galadyas_terminal | One workspace for Windows and Linux: panes, a task manager and offline toolkits.\ngaladyas_visionary | Launch films, reports and lessons from templates, rendered on your own machine."
       }
     },
     {
-      "id": "8d81b019",
-      "template": "features",
-      "duration": 6.0,
-      "fields": {
-        "heading": "One standard, every project",
-        "subheading": "Different tools. The same principles.",
-        "items": "Open | Built in public, free to use and to learn from.\nPrivate by design | No telemetry. Your work stays yours.\nMade to last | Released when stable, shaped by your feedback."
-      }
-    },
-    {
-      "id": "79a9eb32",
-      "template": "statement",
-      "duration": 4.4,
-      "fields": {
-        "text": "Built to help people everywhere learn, create and grow, responsibly.",
-        "attribution": ""
-      }
-    },
-    {
-      "id": "9c716012",
+      "id": "38b61dd2",
       "template": "cosmic",
-      "duration": 6.4,
+      "duration": 5.6,
       "fields": {
         "eyebrow": "",
         "title": "galadyas",
-        "subtitle": "A series of universal projects. More to come.",
+        "subtitle": "Open source. Under development. More to come.",
         "call_to_action": "Stay tuned"
       }
     }

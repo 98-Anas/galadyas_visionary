@@ -15,4 +15,4 @@ __all__ = [
     "build_video", "clamp", "ease", "ease_in_out_cubic", "ease_out_back", "ease_out_cubic", "ease_out_expo",
     "effects", "fade", "find_font", "keyframes", "lerp", "linear", "load", "mix", "ramp", "stagger",
 ]
-__version__ = "1.0.0rc1"
+__version__ = "0.9.0"

@@ -3,8 +3,9 @@
 from dataclasses import dataclass
 from typing import Callable
 
+from . import effects as fx
 from .canvas import Canvas
-from .motion import ramp
+from .motion import ease_in_out_cubic, ease_out_cubic, lerp, ramp
 
 Draw = Callable[[Canvas, float], None]
 
@@ -19,6 +20,15 @@ class Clip:
     fade_in: float = 0.6
     fade_out: float = 0.6
     isolate: bool = True  # draw on a private layer even when fully visible (needed if draw() uses camera or blur)
+    zoom_in: float = 1.0   # scale at the first frame, settling to 1 as the clip fades in (1.03 = gentle push)
+    zoom_out: float = 1.0  # scale reached at the last frame while the clip fades out
+
+    def zoom(self, t: float) -> float:
+        if self.zoom_in != 1 and self.fade_in > 0 and t < self.start + self.fade_in:
+            return lerp(self.zoom_in, 1.0, ramp(t, self.start, self.start + self.fade_in, ease_out_cubic))
+        if self.zoom_out != 1 and self.fade_out > 0 and t > self.end - self.fade_out:
+            return lerp(1.0, self.zoom_out, ramp(t, self.end - self.fade_out, self.end, ease_in_out_cubic))
+        return 1.0
 
     def opacity(self, t: float) -> float:
         a = ramp(t, self.start, self.start + self.fade_in) if self.fade_in > 0 else 1.0
@@ -44,11 +54,14 @@ class Timeline:
         for clip in self.clips:
             if clip.start <= t < clip.end:
                 opacity = clip.opacity(t)
-                if opacity >= 1 and not clip.isolate:
+                zoom = clip.zoom(t)
+                if opacity >= 1 and zoom == 1 and not clip.isolate:
                     clip.draw(c, t - clip.start)
                 elif opacity > 0:
                     layer = c.layer()
                     clip.draw(layer, t - clip.start)
+                    if zoom != 1:
+                        fx.camera(layer, zoom)
                     c.composite(layer, opacity)
         if self.foreground:
             self.foreground(c, t)
