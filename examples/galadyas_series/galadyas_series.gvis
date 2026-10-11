@@ -31,6 +31,16 @@
       }
     },
     {
+      "id": "d177d029",
+      "template": "features",
+      "duration": 6.4,
+      "fields": {
+        "heading": "The first projects",
+        "subheading": "Two tools, built in the open.",
+        "items": "galadyas_terminal | The terminal workspace for Windows and Linux. Available now in pre-release.\ngaladyas_visionary | Polished videos for products, reports and lessons. In development."
+      }
+    },
+    {
       "id": "8d81b019",
       "template": "features",
       "duration": 6.0,

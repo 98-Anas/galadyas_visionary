@@ -57,7 +57,7 @@ uv run galadyas-visionary still project.gvis 2.5 10                 # PNG frames
 
 | Example | Made with | Files |
 |---|---|---|
-| galadyas series teaser (25 s) | Studio templates | [project](examples/galadyas_series/galadyas_series.gvis), [video](examples/galadyas_series/galadyas_series_teaser.mp4) |
+| galadyas series teaser (31 s) | Studio templates | [project](examples/galadyas_series/galadyas_series.gvis), [video](examples/galadyas_series/galadyas_series_teaser.mp4) |
 | galadyas_terminal launch film (30 s) | Python API | [script](examples/galadyas_terminal/launch.py), [video](examples/galadyas_terminal/galadyas_terminal_launch.mp4) |
 | Title card | Python API | [script](examples/pillow/title_card.py) |
 | Hello scene | Manim (optional extra) | [script](examples/manim/hello_scene.py) |
