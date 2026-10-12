@@ -377,7 +377,7 @@ def ending(c, t):
     words(c, 960, 580, "No telemetry.  No network connections.  The same on Windows and Linux.", Font(LIGHT, 32),
           SOFT, t, 0.9, step=0.05)
     k = ramp(t, 1.8, 2.5, ease_out_cubic)
-    label = "Open source  ·  Pre-release  ·  Feedback welcome"
+    label = "Open source  ·  Under development  ·  Feedback welcome"
     lf = Font(SEMI, 22)
     w = c.textlength(label, lf, 1.5) + 64
     y = 668 + 10 * (1 - k)

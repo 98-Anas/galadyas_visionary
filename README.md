@@ -4,6 +4,10 @@ Polished videos for products, launches, reports and lessons, made from templates
 
 galadyas_visionary is a desktop studio for people in technology everywhere: startups and companies introducing a product, engineers and teams presenting results, instructors and subject-matter experts explaining a topic, and individuals sharing their work. No motion designer, no account, nothing uploaded. Pick scenes, type your words, choose a theme, export an MP4.
 
+[![Watch the galadyas_visionary demo](examples/galadyas_visionary/galadyas_visionary_demo.jpg)](examples/galadyas_visionary/galadyas_visionary_demo.mp4)
+
+*Watch the studio demo (32 s), recorded from the real app. Part of the [galadyas series](https://github.com/98-Anas/galadyas) of open-source projects.*
+
 > **Status:** open source and under development (0.9). Expect changes until the first stable release, 1.0. Feedback and issues are welcome.
 
 ## What you get
